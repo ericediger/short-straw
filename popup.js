@@ -19,6 +19,10 @@ const store = {
   }
 };
 
+/* The popup's root element: the body on its own, or #popupRoot when popup.html is embedded
+   in another page (demo.html draws it inside a mock browser window). */
+const popupRoot = () => document.getElementById('popupRoot') || document.body;
+
 /* ---------------- time-zone maths (DST-correct via Intl) ----------------------- */
 const _fmt = new Map();
 function partsFor(ts, tz){
@@ -233,6 +237,7 @@ function drawResults(){
   if (!currentResults.length){
     resultsBox.appendChild(el('div', 'result dim', 'No city matches — try a country or time-zone name.'));
     resultsBox.classList.remove('hidden');
+    reserveForResults();
     return;
   }
   const now = Date.now();
@@ -248,6 +253,7 @@ function drawResults(){
     resultsBox.appendChild(row);
   });
   resultsBox.classList.remove('hidden');
+  reserveForResults();
 }
 function pick(c){
   addCity(c);
@@ -255,7 +261,13 @@ function pick(c){
   closeResults();
   searchInput.focus();
 }
-function closeResults(){ resultsBox.classList.add('hidden'); currentResults = []; activeIdx = -1; }
+function closeResults(){ resultsBox.classList.add('hidden'); currentResults = []; activeIdx = -1; popupRoot().style.minHeight = ''; }
+/* The body never scrolls, so grow it while the dropdown is open or the list would be clipped. */
+function reserveForResults(){
+  const wrap = resultsBox.offsetParent || resultsBox.parentElement;
+  const need = wrap.offsetTop + resultsBox.offsetTop + resultsBox.offsetHeight + 12;
+  popupRoot().style.minHeight = need + 'px';
+}
 
 searchInput.addEventListener('input', e => runSearch(e.target.value));
 searchInput.addEventListener('focus', e => { if (e.target.value) runSearch(e.target.value); });
@@ -271,13 +283,34 @@ searchInput.addEventListener('keydown', e => {
   } else if (e.key === 'Escape'){ closeResults(); }
 });
 
+/* ---------------- fit to the popup --------------------------------------------- */
+/* Chrome caps a browser-action popup at 800x600 CSS px and scrolls anything taller. The popup
+   must open exactly as large as its content and never scroll, so after every layout change:
+   1. measure; if it fits, done;
+   2. switch the detail list to two columns (.many on the root) and measure again;
+   3. as a last resort scale the whole body down (CSS zoom) so it lands on the cap. */
+const POPUP_MAX_H = 598, POPUP_W = 780;
+function fitToPopup(){
+  const b = popupRoot();
+  b.classList.remove('many');
+  b.style.zoom = ''; b.style.width = '';
+  if (b.scrollHeight <= POPUP_MAX_H) return;
+  if (state.people.length > 1){
+    b.classList.add('many');
+    if (b.scrollHeight <= POPUP_MAX_H) return;
+  }
+  const z = POPUP_MAX_H / b.scrollHeight;
+  b.style.zoom = String(z);
+  b.style.width = (POPUP_W / z) + 'px';
+}
+
 /* ---------------- rendering ----------------------------------------------------- */
 function render(){
   const enough = state.people.length >= 1;
   $('#empty').classList.toggle('hidden', enough);
   $('#main').classList.toggle('hidden', !enough);
   $('#quickstart').classList.toggle('hidden', state.people.length === 0 || state.people.length > 2);
-  if (!enough) return;
+  if (!enough){ fitToPopup(); return; }
 
   $('#anchorDate').value = state.anchor;
   $('#duration').value = String(state.duration);
@@ -291,6 +324,7 @@ function render(){
   renderGrid();
   renderDetail();
   renderTally();
+  fitToPopup();
 }
 
 function renderBest(){
@@ -305,8 +339,10 @@ function renderBest(){
     chip.appendChild(el('span', 'rank', '#' + (i + 1)));
     chip.appendChild(el('span', 'bt', fmtTime(p.H, p.M)));
     const ok = slot.per.filter(x => x.pen === 0).length;
+    // Chips share one row, so keep the text short: who draws the straw matters more than the words 'in hours'.
+    const frac = ok + '/' + state.people.length;
     const detail = state.people.length > 1
-      ? ok + '/' + state.people.length + ' in hours' + (slot.straw.length ? ' · 🥤 ' + slot.straw.map(x => x.person.n).join(', ') : '')
+      ? (slot.straw.length ? frac + ' · 🥤 ' + slot.straw.map(x => x.person.n).join(', ') : frac + ' in hours')
       : v.text;
     chip.appendChild(el('span', 'verdict' + (v.cls === 'good' ? ' good' : ''), detail));
     chip.title = v.text;
@@ -325,9 +361,10 @@ function renderGrid(){
   corner.textContent = home.n + ' · ' + tzAbbr(state.slots[0].ts, home.tz);
   grid.appendChild(corner);
 
-  state.slots.forEach(slot => {
+  state.slots.forEach((slot, i) => {
     const p = partsFor(slot.ts, home.tz);
     const h = el('div', 'g-hour' + (slot.ts === state.selected ? ' sel' : ''), fmtHourShort(p.H));
+    h.dataset.h = i;
     h.title = 'Select ' + fmtTime(p.H, p.M) + ' in ' + home.n;
     h.addEventListener('click', () => { state.selected = slot.ts; render(); });
     grid.appendChild(h);
@@ -335,10 +372,11 @@ function renderGrid(){
 
   people.forEach(person => {
     grid.appendChild(nameCell(person));
-    state.slots.forEach(slot => {
+    state.slots.forEach((slot, i) => {
       const entry = slot.per.find(x => x.person.n === person.n);
       const p = entry.start;
       const cell = el('div', 'cell b' + bandOf(entry.pen));
+      cell.dataset.city = person.n; cell.dataset.h = i;
       if (entry.weekend && state.avoidWeekend) cell.classList.add('wknd');
       if (p.H === 0) cell.classList.add('dayline');
       if (slot.ts === state.selected) cell.classList.add('sel');
@@ -352,6 +390,7 @@ function renderGrid(){
 
 function nameCell(person){
   const wrap = el('div', 'g-name');
+  wrap.dataset.city = person.n;
   wrap.appendChild(el('span', 'flag', person.f));
   const txt = el('div', 'txt');
   const cn = el('span', 'cn', person.n);
@@ -362,7 +401,7 @@ function nameCell(person){
   wrap.appendChild(txt);
 
   const tools = el('div', 'g-tools');
-  const homeBtn = el('button', 'tool' + (person.n === state.homeName ? ' on' : ''), '⌂');
+  const homeBtn = el('button', 'tool home' + (person.n === state.homeName ? ' on' : ''), '⌂');
   homeBtn.title = 'Use as the reference city';
   homeBtn.addEventListener('click', () => {
     const prev = homePerson();
@@ -371,10 +410,10 @@ function nameCell(person){
     state.anchor = keep || isoDate(partsFor(Date.now(), prev.tz));
     save(); render();
   });
-  const flexBtn = el('button', 'tool' + (person.flex ? ' on' : ''), '⚡');
+  const flexBtn = el('button', 'tool flex' + (person.flex ? ' on' : ''), '⚡');
   flexBtn.title = person.flex ? 'Flexible hours: on' : 'Mark as flexible (±1.5 h)';
   flexBtn.addEventListener('click', () => { person.flex = !person.flex; save(); render(); });
-  const delBtn = el('button', 'tool', '✕');
+  const delBtn = el('button', 'tool del', '✕');
   delBtn.title = 'Remove';
   delBtn.addEventListener('click', () => removeCity(person.n));
   tools.appendChild(homeBtn); tools.appendChild(flexBtn); tools.appendChild(delBtn);
@@ -393,7 +432,7 @@ function editName(person, node){
   const commit = () => { person.who = input.value.trim(); save(); render(); };
   input.addEventListener('blur', commit);
   input.addEventListener('keydown', e => {
-    if (e.key === 'Enter') input.blur();
+    if (e.key === 'Enter'){ input.removeEventListener('blur', commit); commit(); }
     if (e.key === 'Escape'){ input.removeEventListener('blur', commit); render(); }
   });
 }
@@ -415,13 +454,16 @@ function renderDetail(){
 
   const actions = el('div', 'detail-actions');
   const copyBtn = el('button', 'btn ghost', 'Copy times');
+  copyBtn.id = 'copyBtn';
   copyBtn.addEventListener('click', () => copySummary(slot));
   const calBtn = el('button', 'btn ghost', 'Calendar');
+  calBtn.id = 'calBtn';
   calBtn.title = 'Open a pre-filled Google Calendar event in a new tab';
   calBtn.addEventListener('click', () => openCalendar(slot));
   actions.appendChild(copyBtn); actions.appendChild(calBtn);
   if (slot.straw.length){
     const logBtn = el('button', 'btn', 'Log short straw');
+    logBtn.id = 'logBtn';
     logBtn.title = 'Record who took the hit, so the next pick can spread it around';
     logBtn.addEventListener('click', () => logStraw(slot));
     actions.appendChild(logBtn);
@@ -435,6 +477,7 @@ function renderDetail(){
     const e = slot.per.find(x => x.person.n === person.n);
     const isStraw = slot.straw.some(x => x.person.n === person.n);
     const row = el('div', 'drow' + (isStraw ? ' straw' : ''));
+    row.dataset.city = person.n;
     row.appendChild(el('span', 'flag', person.f));
     const who = el('span');
     who.appendChild(el('b', null, person.n));
@@ -542,7 +585,7 @@ function toast(msg){
   const old = document.querySelector('.toast');
   if (old) old.remove();
   const t = el('div', 'toast', msg);
-  document.body.appendChild(t);
+  popupRoot().appendChild(t);
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.remove(), 1900);
 }
@@ -581,11 +624,13 @@ $('#settingsBtn').addEventListener('click', () => {
   const p = $('#settings');
   p.classList.toggle('hidden');
   $('#settingsBtn').classList.toggle('on', !p.classList.contains('hidden'));
+  fitToPopup();
 });
 $('#tallyBtn').addEventListener('click', () => {
   const p = $('#tally');
   p.classList.toggle('hidden');
   $('#tallyBtn').classList.toggle('on', !p.classList.contains('hidden'));
+  fitToPopup();
 });
 $('#resetTally').addEventListener('click', () => { state.tally = {}; save(); render(); toast('Tally cleared'); });
 $('#workStart').addEventListener('change', e => {

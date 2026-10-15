@@ -1,5 +1,10 @@
 # Short Straw — global meeting planner
 
+[![Watch the two-minute explainer video](media/explainer-poster.jpg)](https://ericediger.github.io/short-straw/media/short-straw-explainer.mp4)
+
+**[▶ Watch the 2-minute explainer](https://ericediger.github.io/short-straw/media/short-straw-explainer.mp4)** · **[Try the live demo](https://ericediger.github.io/short-straw/demo.html)** — the real popup, pre-loaded with a fictional
+three-city team. Nothing is saved anywhere but your own browser, and no key or account is needed.
+
 A Chrome extension that finds the least-painful meeting time across time zones, and is
 honest about who's taking the hit when there isn't a painless one.
 
@@ -64,14 +69,21 @@ per-zone with `Intl.DateTimeFormat`, so a date in March or November behaves prop
 ## Files
 
 ```
-manifest.json   MV3 manifest (only permission: storage)
+manifest.json       MV3 manifest (only permission: storage)
 popup.html/css/js   the whole UI
-cities.js       ~140 cities with IANA zones
-icons/          generated PNGs
+cities.js           ~140 cities with IANA zones
+icons/              generated PNGs
+demo.html/css/js    the live demo: a mock browser window around the real popup, with a fictional team
+media/              the explainer video and its poster frame
 ```
 
 ## Local preview without Chrome
 
 `popup.html` runs standalone in any browser — it falls back to `localStorage` when
-`chrome.storage` isn't there. Open the file directly, or serve the folder with any
-static server (e.g. `python3 -m http.server`) and browse to `popup.html`.
+`chrome.storage` isn't there. Serve the folder with any static server (e.g.
+`python3 -m http.server`) and browse to `popup.html` for the bare popup, or to `demo.html`
+for the same popup inside a mock browser window with the fictional demo team.
+
+The popup never scrolls: Chrome caps a popup at 800×600, so the layout sizes itself to its
+content, switches the detail list to two columns when the team is long, and scales down as a
+last resort (`fitToPopup` in `popup.js`).

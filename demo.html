@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Short Straw — demo</title>
+<!--
+  Live demo and recording stage. A Chrome-style window with a fictional team chat behind the
+  extension's REAL popup: popup.html's markup, popup.css, cities.js and popup.js, loaded as-is
+  from this folder. Nothing is saved anywhere but this browser's localStorage; no key, no account.
+
+  Scenarios for the explainer recorder are picked by the hash:
+    #cities  first run, only your own city          #grid  #best  #tools  #share  the three-city team
+    #rotate  the team plus one logged short straw for Sydney
+  The stage is laid out at 1600x900 and scaled to the window; the recorder opens it at 2400x1350.
+-->
+<link rel="stylesheet" href="popup.css" />
+<link rel="stylesheet" href="demo.css" />
+</head>
+<body>
+<div id="stage">
+  <div class="cx-tabs">
+    <div class="cx-lights"><i></i><i></i><i></i></div>
+    <div class="cx-tab active" id="tabChat">
+      <span class="cx-fav cx-fav-chat"></span><span class="cx-tab-title">#q4-kickoff — Halcyon Chat</span><span class="cx-x">&times;</span>
+    </div>
+    <div class="cx-tab cx-hidden" id="tabCal">
+      <span class="cx-fav cx-fav-cal"></span><span class="cx-tab-title">Google Calendar</span><span class="cx-x">&times;</span>
+    </div>
+    <div class="cx-newtab">+</div>
+  </div>
+
+  <div class="cx-toolbar">
+    <span class="cx-nav">&#8592;</span><span class="cx-nav">&#8594;</span><span class="cx-nav">&#8635;</span>
+    <div class="cx-omni"><span class="cx-tune"></span><span id="omniText">chat.halcyon.example/q4-kickoff</span></div>
+    <div class="cx-ext">
+      <button id="extBtn" class="cx-ext-btn on" title="Short Straw"><img src="icons/icon32.png" alt="" /></button>
+      <span class="cx-puzzle" title="Extensions"></span>
+      <span class="cx-avatar">MC</span>
+    </div>
+  </div>
+
+  <div class="cx-body">
+    <main class="cx-page" id="chatPage">
+      <aside class="ch-side">
+        <div class="ch-brand"><span class="ch-logo"></span>Halcyon Robotics</div>
+        <div class="ch-sec">Channels</div>
+        <div class="ch-item"># general</div>
+        <div class="ch-item sel"># q4-kickoff</div>
+        <div class="ch-item"># platform</div>
+        <div class="ch-item"># sydney-office</div>
+        <div class="ch-sec">Direct messages</div>
+        <div class="ch-item"><i class="ch-dot on"></i>Tom Okafor</div>
+        <div class="ch-item"><i class="ch-dot"></i>Priya Raman</div>
+      </aside>
+      <section class="ch-main">
+        <header class="ch-head"><b># q4-kickoff</b><span>3 members · New York · London · Sydney</span></header>
+        <div class="ch-msgs" id="chatMsgs"></div>
+        <div class="ch-compose">Message #q4-kickoff</div>
+      </section>
+    </main>
+    <div class="cx-page cx-loading cx-hidden" id="calPage">
+      <div class="ld-spin"></div>
+      <div class="ld-url" id="ldUrl">calendar.google.com</div>
+      <div class="ld-sub">Opening a pre-filled event…</div>
+    </div>
+  </div>
+
+  <!-- The extension's popup, anchored under its toolbar icon exactly as Chrome draws it. -->
+  <div id="popupWrap" class="cx-popup">
+    <div class="cx-popup-caret"></div>
+    <div id="popupRoot"></div>
+  </div>
+</div>
+<script src="demo.js"></script>
+</body>
+</html>

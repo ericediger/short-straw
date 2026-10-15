@@ -25,12 +25,15 @@
   }
 }
 *{box-sizing:border-box}
-html,body{margin:0}
+/* Chrome caps a popup at 800x600 CSS px and scrolls past that. The popup sizes itself to
+   its content instead: no max-height, no scrollbars. fitToPopup() in popup.js tightens the
+   layout (body.many) or scales it when the content would exceed the cap. */
+html,body{margin:0; overflow:hidden}
 body{
-  width:780px; max-height:600px; overflow-y:auto;
+  width:780px;
   background:var(--bg); color:var(--text);
   font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  padding:0 14px 14px;
+  padding:0 12px 10px;
 }
 .hidden{display:none !important}
 
@@ -38,11 +41,11 @@ body{
 .topbar{
   position:sticky; top:0; z-index:20; background:var(--bg);
   display:flex; align-items:center; justify-content:space-between;
-  padding:12px 0 10px; border-bottom:1px solid var(--line); margin-bottom:10px;
+  padding:8px 0 7px; border-bottom:1px solid var(--line); margin-bottom:8px;
 }
 .brand{display:flex; align-items:center; gap:10px}
-.brand-mark{font-size:22px; line-height:1}
-h1{margin:0; font-size:15px; letter-spacing:.2px}
+.brand-mark{font-size:20px; line-height:1}
+h1{margin:0; font-size:14px; letter-spacing:.2px}
 .tagline{margin:1px 0 0; font-size:11px; color:var(--muted)}
 .topbar-actions{display:flex; gap:6px}
 .icon-btn{
@@ -61,7 +64,7 @@ h1{margin:0; font-size:15px; letter-spacing:.2px}
 /* ---------- panels ---------- */
 .panel{
   background:var(--panel); border:1px solid var(--line);
-  border-radius:var(--radius); padding:10px 12px; margin-bottom:10px;
+  border-radius:var(--radius); padding:8px 12px; margin-bottom:8px;
 }
 .panel-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px}
 .panel h2{margin:0; font-size:12px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted)}
@@ -76,7 +79,7 @@ input[type=number],input[type=date],select,input[type=text]{
 }
 input[type=number]{width:52px}
 input:focus,select:focus{outline:none; border-color:var(--accent)}
-.hint{margin:8px 0 0; font-size:11px; color:var(--muted-2)}
+.hint{margin:6px 0 0; font-size:11px; color:var(--muted-2)}
 
 .tally-list{display:flex; flex-wrap:wrap; gap:6px}
 .tally-item{
@@ -86,9 +89,9 @@ input:focus,select:focus{outline:none; border-color:var(--accent)}
 .tally-item b{color:var(--straw)}
 
 /* ---------- add bar ---------- */
-.addbar{display:flex; gap:8px; align-items:center; margin-bottom:10px}
+.addbar{display:flex; gap:8px; align-items:center; margin-bottom:8px}
 .search-wrap{position:relative; flex:1}
-#citySearch{width:100%; padding:8px 10px}
+#citySearch{width:100%; padding:6px 10px}
 .results{
   position:absolute; z-index:30; top:calc(100% + 4px); left:0; right:0;
   max-height:240px; overflow-y:auto;
@@ -107,7 +110,7 @@ input:focus,select:focus{outline:none; border-color:var(--accent)}
 .result.dim{opacity:.45; cursor:default}
 
 /* ---------- empty ---------- */
-.empty{padding:22px 6px; text-align:center; color:var(--muted)}
+.empty{padding:18px 6px; text-align:center; color:var(--muted)}
 .empty p{margin:0 0 8px}
 .chip{
   background:var(--panel); border:1px solid var(--line); color:var(--text);
@@ -116,31 +119,32 @@ input:focus,select:focus{outline:none; border-color:var(--accent)}
 .chip:hover{border-color:var(--accent); background:var(--accent-soft)}
 
 /* ---------- controls ---------- */
-.controls{display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap; margin-bottom:10px}
-.ctl{font-size:11px; color:var(--muted); display:flex; flex-direction:column; gap:4px}
-.daynav{display:flex; align-items:center; gap:4px; padding-bottom:2px}
+.controls{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px}
+.ctl{font-size:11px; color:var(--muted); display:flex; flex-direction:row; align-items:center; gap:6px}
+.daynav{display:flex; align-items:center; gap:4px}
 .legend{margin-left:auto; display:flex; align-items:center; gap:5px; font-size:11px; color:var(--muted)}
 .lg{width:11px; height:11px; border-radius:3px; display:inline-block; margin-left:7px}
 .lg-ok{background:var(--ok)} .lg-edge{background:var(--edge)}
 .lg-bad{background:var(--bad)} .lg-night{background:var(--night)}
 
 /* ---------- best slots ---------- */
-.best{display:flex; align-items:center; gap:8px; margin-bottom:10px; min-height:28px}
+.best{display:flex; align-items:center; gap:8px; margin-bottom:8px; min-height:26px}
 .best-label{font-size:11px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); white-space:nowrap}
-.best-chips{display:flex; gap:6px; flex-wrap:wrap}
+.best-chips{display:flex; gap:6px; flex:1; min-width:0}
 .best-chip{
   background:var(--panel); border:1px solid var(--line); color:var(--text);
-  border-radius:8px; padding:4px 9px; font-size:12px; cursor:pointer;
-  display:flex; align-items:center; gap:7px;
+  border-radius:8px; padding:3px 8px; font-size:12px; cursor:pointer;
+  display:flex; align-items:center; gap:6px;
+  flex:1 1 0; min-width:0; white-space:nowrap; overflow:hidden;
 }
 .best-chip:hover{border-color:var(--accent)}
 .best-chip.sel{border-color:var(--accent); background:var(--accent-soft)}
 .best-chip .rank{color:var(--muted-2); font-size:10px}
-.best-chip .verdict{font-size:10px; color:var(--muted)}
+.best-chip .verdict{font-size:10px; color:var(--muted); min-width:0; overflow:hidden; text-overflow:ellipsis}
 .best-chip .verdict.good{color:var(--ok-2)}
 
 /* ---------- grid ---------- */
-.gridwrap{border:1px solid var(--line); border-radius:var(--radius); padding:8px; background:var(--panel); overflow-x:auto}
+.gridwrap{border:1px solid var(--line); border-radius:var(--radius); padding:6px; background:var(--panel); overflow:hidden}
 .grid{display:grid; grid-template-columns:150px repeat(24, 1fr); gap:2px; min-width:720px}
 .g-corner{font-size:10px; color:var(--muted-2); display:flex; align-items:flex-end; padding-bottom:3px}
 .g-hour{
@@ -154,9 +158,9 @@ input:focus,select:focus{outline:none; border-color:var(--accent)}
   border-radius:6px;
 }
 .g-name .flag{font-size:13px}
-.g-name .txt{min-width:0; flex:1}
-.g-name .cn{font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block}
-.g-name .who{font-size:10px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block}
+.g-name .txt{min-width:0; flex:1; line-height:1.15}
+.g-name .cn{font-size:11px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block}
+.g-name .who{font-size:9.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block}
 .g-name .who:hover{color:var(--accent)}
 .g-tools{display:flex; gap:2px; opacity:.35}
 .g-name:hover .g-tools{opacity:1}
@@ -167,7 +171,7 @@ input:focus,select:focus{outline:none; border-color:var(--accent)}
 .tool:hover{background:var(--panel-2); color:var(--text)}
 .tool.on{color:var(--accent); font-weight:700}
 .cell{
-  height:24px; border-radius:4px; font-size:10px; display:flex; align-items:center;
+  height:22px; border-radius:4px; font-size:10px; display:flex; align-items:center;
   justify-content:center; cursor:pointer; font-variant-numeric:tabular-nums;
   color:#0d1018; font-weight:600; position:relative; border:1px solid transparent;
 }
@@ -183,9 +187,9 @@ input:focus,select:focus{outline:none; border-color:var(--accent)}
 .cell.dayline{border-left:2px solid var(--muted-2)}
 
 /* ---------- detail ---------- */
-.detail{margin-top:10px}
-.detail-card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:10px 12px}
-.detail-head{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px}
+.detail{margin-top:8px}
+.detail-card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:8px 10px}
+.detail-head{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px}
 .detail-head h2{margin:0; font-size:14px; text-transform:none; letter-spacing:0; color:var(--text)}
 .verdict-pill{font-size:11px; padding:2px 9px; border-radius:999px; border:1px solid var(--line); color:var(--muted)}
 .verdict-pill.good{color:var(--ok-2); border-color:var(--ok)}
@@ -198,23 +202,30 @@ input:focus,select:focus{outline:none; border-color:var(--accent)}
 }
 .btn:hover{filter:brightness(1.08)}
 .btn.ghost{background:var(--panel-2); color:var(--text); border:1px solid var(--line)}
-.rows{display:flex; flex-direction:column; gap:3px}
+.rows{display:flex; flex-direction:column; gap:2px}
 .drow{
   display:grid; grid-template-columns:20px 1fr 136px 92px 86px; gap:8px; align-items:center;
-  padding:5px 7px; border-radius:7px; background:var(--panel-2); font-size:12px;
+  padding:3px 7px; border-radius:7px; background:var(--panel-2); font-size:11.5px;
 }
 .drow .ddate{color:var(--muted); font-size:11px; text-align:right; white-space:nowrap}
 .drow.straw{background:linear-gradient(90deg,rgba(224,168,60,.20),var(--panel-2)); border:1px solid var(--straw)}
 .drow .dwho{color:var(--muted); font-size:11px}
-.drow .dtime{font-variant-numeric:tabular-nums; font-weight:600; text-align:right}
+.drow .dtime{font-variant-numeric:tabular-nums; font-weight:600; text-align:right; white-space:nowrap}
 .drow .dtag{font-size:10px; color:var(--muted); white-space:nowrap; text-align:right}
 .quickstart{display:flex; align-items:center; gap:6px; margin:-4px 0 10px; font-size:11px; color:var(--muted-2)}
 .drow .dtag.straw-tag{color:var(--straw); font-weight:700}
-.straw-note{margin:9px 0 0; font-size:12px; color:var(--muted)}
+.straw-note{margin:6px 0 0; font-size:11.5px; color:var(--muted)}
 .straw-note b{color:var(--straw)}
 .toast{
-  position:fixed; left:50%; transform:translateX(-50%); bottom:14px;
+  position:absolute; left:50%; transform:translateX(-50%); bottom:14px;
   background:var(--panel); border:1px solid var(--accent); color:var(--text);
   padding:7px 14px; border-radius:999px; font-size:12px; z-index:60;
   box-shadow:0 8px 24px rgba(0,0,0,.4);
 }
+
+/* ---------- dense mode (.many on the popup root, set by fitToPopup in popup.js) ---------- */
+/* The detail list runs in two columns and drops the tag column; the short-straw row keeps
+   its highlight and the note under the list names who drew it. */
+.many .rows{display:grid; grid-template-columns:1fr 1fr; gap:2px 8px}
+.many .drow{grid-template-columns:18px 1fr 126px 64px; gap:6px; font-size:11px}
+.many .drow .dtag{display:none}

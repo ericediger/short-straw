@@ -1,0 +1,121 @@
+/* Demo stage: a light Chrome-style window around the real popup. Classes here are prefixed
+   (cx- chrome, ch- chat, ld- loading) so nothing collides with popup.css. */
+
+/* popup.css styles <body> as the popup; on the stage the popup lives in #popupRoot instead. */
+html, body { width: auto; height: 100%; padding: 0; margin: 0; overflow: hidden; background: #cfd5dd; }
+::-webkit-scrollbar { width: 0; height: 0; }
+
+/* Always the dark popup on the stage, whatever the viewer's colour scheme (the light page behind it
+   is what gives the contrast). Same values as popup.css's :root. */
+:root{
+  --bg:#0f1420; --panel:#161d2e; --panel-2:#1c2437; --line:#2a3450;
+  --text:#e8ecf5; --muted:#9aa6c2; --muted-2:#6f7c9c;
+  --accent:#6c8cff; --accent-soft:#22305c;
+  --ok:#3f9c6d; --ok-2:#4bb87a; --edge:#b98a2e; --bad:#c9622f; --night:#a3374d; --straw:#e0a83c;
+}
+
+#stage {
+  zoom: 1.5;
+  width: 1600px; height: 900px; overflow: hidden; position: relative;
+  display: flex; flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  color: #202124; background: #fff;
+}
+.cx-hidden { display: none !important; }
+
+/* ---- Tab strip ---- */
+.cx-tabs { height: 38px; flex: none; display: flex; align-items: flex-end; gap: 2px; padding: 0 10px; background: #dfe3e8; }
+.cx-lights { align-self: center; display: flex; gap: 8px; margin: 0 16px 0 4px; }
+.cx-lights i { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; }
+.cx-lights i:nth-child(2) { background: #febc2e; }
+.cx-lights i:nth-child(3) { background: #28c840; }
+.cx-tab {
+  height: 31px; width: 250px; padding: 0 10px 0 12px; border-radius: 10px 10px 0 0;
+  display: flex; align-items: center; gap: 9px; font-size: 12.5px; color: #3c4043;
+}
+.cx-tab.active { background: #fff; }
+.cx-tab-title { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cx-x { color: #5f6368; font-size: 15px; line-height: 1; }
+.cx-fav { width: 16px; height: 16px; border-radius: 4px; flex: none; display: grid; place-items: center; }
+.cx-fav-chat { background: linear-gradient(135deg, #7c5cff, #4b8bff); position: relative; }
+.cx-fav-chat::after { content: ""; width: 8px; height: 6px; border: 1.5px solid #fff; border-radius: 2px; }
+.cx-fav-cal { background: #fff; border: 1px solid #dadce0; position: relative; }
+.cx-fav-cal::after { content: ""; width: 8px; height: 8px; border-radius: 1px; background: #1a73e8; }
+.cx-newtab { align-self: center; margin-left: 6px; color: #5f6368; font-size: 18px; }
+
+/* ---- Toolbar ---- */
+.cx-toolbar {
+  height: 44px; flex: none; display: flex; align-items: center; gap: 4px; padding: 0 10px;
+  background: #fff; border-bottom: 1px solid #e3e6ea;
+}
+.cx-nav { width: 30px; height: 30px; display: grid; place-items: center; color: #5f6368; font-size: 17px; border-radius: 50%; }
+.cx-omni {
+  flex: 1; height: 32px; margin: 0 8px; padding: 0 14px; border-radius: 16px; background: #f1f3f4;
+  display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: #202124;
+}
+.cx-tune { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #5f6368; position: relative; }
+.cx-tune::after { content: ""; position: absolute; left: 3px; top: 3px; width: 4px; height: 4px; border-radius: 50%; background: #5f6368; }
+.cx-ext { display: flex; align-items: center; gap: 4px; }
+.cx-ext-btn {
+  width: 32px; height: 32px; border: none; border-radius: 50%; background: transparent;
+  display: grid; place-items: center; cursor: pointer; transition: background .2s;
+}
+.cx-ext-btn img { width: 20px; height: 20px; border-radius: 5px; }
+.cx-ext-btn.on { background: #e8edff; }
+.cx-puzzle {
+  width: 32px; height: 32px; border-radius: 50%; background: center / 18px no-repeat
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%235f6368' d='M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7s2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z'/%3E%3C/svg%3E");
+}
+.cx-avatar {
+  width: 26px; height: 26px; margin-left: 6px; border-radius: 50%; background: #d9822b; color: #fff;
+  font-size: 11px; font-weight: 600; display: grid; place-items: center;
+}
+
+/* ---- Body: the page behind the popup ---- */
+.cx-body { flex: 1; min-height: 0; display: flex; background: #fff; }
+.cx-page { flex: 1; min-width: 0; position: relative; overflow: hidden; display: flex; }
+
+/* ---- Fictional team chat ---- */
+.ch-side { width: 232px; flex: none; background: #1f1b36; color: #d4d0ea; padding: 18px 14px; }
+.ch-brand { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 22px; }
+.ch-logo { width: 24px; height: 24px; border-radius: 7px; background: linear-gradient(135deg, #7c5cff, #4b8bff); }
+.ch-sec { font-size: 11px; letter-spacing: .8px; text-transform: uppercase; color: #8e88b3; margin: 14px 0 6px 8px; }
+.ch-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; font-size: 14px; color: #c9c4e6; }
+.ch-item.sel { background: #3b3470; color: #fff; }
+.ch-dot { width: 8px; height: 8px; border-radius: 50%; background: #6b6590; }
+.ch-dot.on { background: #4bb87a; }
+.ch-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ch-head { height: 54px; flex: none; display: flex; align-items: center; gap: 12px; padding: 0 24px; border-bottom: 1px solid #eceff3; }
+.ch-head b { font-size: 16px; color: #1f2a37; }
+.ch-head span { font-size: 13px; color: #7a8594; }
+.ch-msgs { flex: 1; padding: 18px 24px; overflow: hidden; }
+.ch-msg { display: flex; gap: 12px; margin-bottom: 18px; }
+.ch-av { width: 38px; height: 38px; border-radius: 9px; color: #fff; font-size: 14px; font-weight: 700; display: grid; place-items: center; flex: none; }
+.ch-name { font-size: 14.5px; font-weight: 700; color: #1f2a37; }
+.ch-name small { font-weight: 400; color: #7a8594; margin-left: 8px; font-size: 12.5px; }
+.ch-text { font-size: 15px; line-height: 1.5; color: #2b3442; margin-top: 2px; max-width: 520px; }
+.ch-text em { font-style: normal; background: #fff1cc; border-radius: 4px; padding: 0 4px; }
+.ch-compose { margin: 0 24px 20px; height: 44px; border: 1px solid #dde3ea; border-radius: 10px; padding: 0 14px; display: flex; align-items: center; color: #9aa3ad; font-size: 14px; }
+
+/* ---- The popup, as Chrome anchors it under the toolbar icon ---- */
+.cx-popup { position: absolute; top: 88px; right: 60px; z-index: 5; filter: drop-shadow(0 14px 34px rgba(0,0,0,.45)); }
+.cx-popup-caret { position: absolute; top: -7px; right: 28px; width: 14px; height: 14px; background: var(--bg); transform: rotate(45deg); border-left: 1px solid var(--line); border-top: 1px solid var(--line); }
+#popupRoot {
+  position: relative; width: 780px; overflow: hidden; border-radius: 10px; border: 1px solid var(--line);
+  padding: 0 12px 10px; background: var(--bg); color: var(--text);
+  font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.cx-popup.closed { display: none; }
+
+/* ---- Placeholder for the calendar tab (Google Calendar itself is not shown) ---- */
+.cx-loading { flex-direction: column; align-items: center; justify-content: center; gap: 16px; background: #fff; }
+.ld-spin { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #e3e6ea; border-top-color: #9aa0a6; animation: ld 0.9s linear infinite; }
+@keyframes ld { to { transform: rotate(360deg); } }
+.ld-url { font-size: 15px; color: #3c4043; max-width: 640px; text-align: center; line-height: 1.5; word-break: break-all; }
+.ld-sub { font-size: 13px; color: #80868b; }
+
+/* ---- Recorder overlays, scaled to the 1.5x stage ---- */
+#__cursor { width: 42px !important; height: 42px !important; }
+#__cursor svg { width: 42px !important; height: 42px !important; }
+#__ripple { width: 66px !important; height: 66px !important; margin: -33px 0 0 -33px !important; border-width: 4px !important; }
+#__spot { border-radius: 14px !important; outline-width: 3px !important; }
