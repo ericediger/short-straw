@@ -14,7 +14,8 @@ Plain HTML/CSS/JS. No build step, no bundler, no network calls, no accounts.
 
 1. Open `chrome://extensions`
 2. Turn on **Developer mode** (top right)
-3. Click **Load unpacked** and choose this folder
+3. Click **Load unpacked** and choose this folder (or run `./make-dist.sh` and choose
+   `dist/`, which holds only the extension files)
 4. Pin the 🥤 icon to the toolbar
 
 To pick up code changes later, hit the ↻ reload button on the extension's card.
@@ -75,6 +76,7 @@ cities.js           ~140 cities with IANA zones
 icons/              generated PNGs
 demo.html/css/js    the live demo: a mock browser window around the real popup, with a fictional team
 media/              the explainer video and its poster frame
+make-dist.sh        copies just the extension files into dist/ (ignored by git)
 ```
 
 ## Local preview without Chrome
