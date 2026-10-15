@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Short Straw</title>
+<link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">🥤</span>
+    <div>
+      <h1>Short Straw</h1>
+      <p class="tagline">Best meeting time across time zones</p>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <button id="tallyBtn" class="icon-btn" title="Short-straw tally">📊</button>
+    <button id="settingsBtn" class="icon-btn" title="Settings">⚙</button>
+  </div>
+</header>
+
+<section id="settings" class="panel hidden">
+  <div class="settings-grid">
+    <label>Working hours
+      <span class="row-inline">
+        <input type="number" id="workStart" min="0" max="23" step="1" value="9" />
+        <span class="dash">to</span>
+        <input type="number" id="workEnd" min="1" max="24" step="1" value="17" />
+      </span>
+    </label>
+    <label>Clock
+      <select id="clockFmt">
+        <option value="12">12-hour</option>
+        <option value="24">24-hour</option>
+      </select>
+    </label>
+    <label class="check"><input type="checkbox" id="avoidWeekend" checked /> Penalise weekends</label>
+    <label class="check"><input type="checkbox" id="rotatePain" checked /> Rotate the pain (use tally)</label>
+  </div>
+  <p class="hint">“Flex” on a person widens their tolerance by 1.5&nbsp;h either side — for the early birds and night owls.</p>
+</section>
+
+<section id="tally" class="panel hidden">
+  <div class="panel-head">
+    <h2>Short-straw tally</h2>
+    <button id="resetTally" class="link-btn">Reset</button>
+  </div>
+  <div id="tallyList" class="tally-list"></div>
+</section>
+
+<section class="addbar">
+  <div class="search-wrap">
+    <input type="text" id="citySearch" placeholder="Add a city — type to search (e.g. Tokyo, São Paulo)" autocomplete="off" />
+    <div id="cityResults" class="results hidden"></div>
+  </div>
+  <button id="clearAll" class="link-btn" title="Remove all cities">Clear</button>
+</section>
+
+<section id="quickstart" class="quickstart hidden">
+  <span>Quick start:</span>
+  <button class="chip preset" data-preset="New York|London|Singapore">NY · London · Singapore</button>
+  <button class="chip preset" data-preset="San Francisco|London|Bengaluru">SF · London · Bengaluru</button>
+  <button class="chip preset" data-preset="New York|London|Sydney">NY · London · Sydney</button>
+</section>
+
+<section id="empty" class="empty">
+  <p><strong>Add a city</strong> to see the grid.</p>
+  <p class="hint">Quick start:
+    <button class="chip preset" data-preset="New York|London|Singapore">NY · London · Singapore</button>
+    <button class="chip preset" data-preset="San Francisco|London|Bengaluru">SF · London · Bengaluru</button>
+    <button class="chip preset" data-preset="New York|London|Sydney">NY · London · Sydney</button>
+  </p>
+</section>
+
+<section id="main" class="hidden">
+  <div class="controls">
+    <label class="ctl">Date
+      <input type="date" id="anchorDate" />
+    </label>
+    <div class="daynav">
+      <button id="prevDay" class="icon-btn sm" title="Previous day">‹</button>
+      <button id="today" class="link-btn">Today</button>
+      <button id="nextDay" class="icon-btn sm" title="Next day">›</button>
+    </div>
+    <label class="ctl">Length
+      <select id="duration">
+        <option value="30">30 min</option>
+        <option value="60" selected>60 min</option>
+        <option value="90">90 min</option>
+        <option value="120">2 hours</option>
+      </select>
+    </label>
+    <div class="legend">
+      <span class="lg lg-ok"></span>work
+      <span class="lg lg-edge"></span>edge
+      <span class="lg lg-bad"></span>rough
+      <span class="lg lg-night"></span>night
+    </div>
+  </div>
+
+  <div class="best">
+    <span class="best-label">Best slots</span>
+    <div id="bestChips" class="best-chips"></div>
+  </div>
+
+  <div class="gridwrap">
+    <div id="grid" class="grid"></div>
+  </div>
+
+  <div id="detail" class="detail"></div>
+</section>
+
+<script src="cities.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>

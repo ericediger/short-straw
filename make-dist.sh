@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Rebuild dist/ with only the files Chrome needs to load Short Straw.
-# Usage: ./make-dist.sh   then load dist/ unpacked at chrome://extensions
+# dist/ is committed and is what end users install, so rerun this (and commit
+# the result) whenever manifest.json, popup.*, cities.js or icons/ change.
 set -euo pipefail
 cd "$(dirname "$0")"
 

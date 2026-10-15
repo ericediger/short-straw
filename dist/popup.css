@@ -1,0 +1,231 @@
+:root{
+  --bg:#0f1420;
+  --panel:#161d2e;
+  --panel-2:#1c2437;
+  --line:#2a3450;
+  --text:#e8ecf5;
+  --muted:#9aa6c2;
+  --muted-2:#6f7c9c;
+  --accent:#6c8cff;
+  --accent-soft:#22305c;
+  --ok:#3f9c6d;
+  --ok-2:#4bb87a;
+  --edge:#b98a2e;
+  --bad:#c9622f;
+  --night:#a3374d;
+  --straw:#e0a83c;
+  --radius:10px;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f5f7fb; --panel:#ffffff; --panel-2:#eef2f9; --line:#d8e0ee;
+    --text:#141a26; --muted:#5a6782; --muted-2:#8b96ad;
+    --accent:#3558d6; --accent-soft:#dde5ff;
+    --ok:#3f9c6d; --ok-2:#2f8d5e; --edge:#c08a1f; --bad:#cc6329; --night:#c04058;
+  }
+}
+*{box-sizing:border-box}
+/* Chrome caps a popup at 800x600 CSS px and scrolls past that. The popup sizes itself to
+   its content instead: no max-height, no scrollbars. fitToPopup() in popup.js tightens the
+   layout (body.many) or scales it when the content would exceed the cap. */
+html,body{margin:0; overflow:hidden}
+body{
+  width:780px;
+  background:var(--bg); color:var(--text);
+  font:13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  padding:0 12px 10px;
+}
+.hidden{display:none !important}
+
+/* ---------- header ---------- */
+.topbar{
+  position:sticky; top:0; z-index:20; background:var(--bg);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 0 7px; border-bottom:1px solid var(--line); margin-bottom:8px;
+}
+.brand{display:flex; align-items:center; gap:10px}
+.brand-mark{font-size:20px; line-height:1}
+h1{margin:0; font-size:14px; letter-spacing:.2px}
+.tagline{margin:1px 0 0; font-size:11px; color:var(--muted)}
+.topbar-actions{display:flex; gap:6px}
+.icon-btn{
+  background:var(--panel); color:var(--text); border:1px solid var(--line);
+  border-radius:8px; width:30px; height:28px; cursor:pointer; font-size:13px;
+}
+.icon-btn.sm{width:24px; height:24px; font-size:14px; line-height:1}
+.icon-btn:hover{background:var(--panel-2); border-color:var(--accent)}
+.icon-btn.on{border-color:var(--accent); background:var(--accent-soft)}
+.link-btn{
+  background:none; border:none; color:var(--accent); cursor:pointer;
+  font-size:12px; padding:2px 4px; border-radius:6px;
+}
+.link-btn:hover{background:var(--accent-soft)}
+
+/* ---------- panels ---------- */
+.panel{
+  background:var(--panel); border:1px solid var(--line);
+  border-radius:var(--radius); padding:8px 12px; margin-bottom:8px;
+}
+.panel-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px}
+.panel h2{margin:0; font-size:12px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted)}
+.settings-grid{display:flex; flex-wrap:wrap; gap:14px 22px; align-items:center}
+.settings-grid label{font-size:11px; color:var(--muted); display:flex; flex-direction:column; gap:4px}
+.settings-grid label.check{flex-direction:row; align-items:center; gap:6px; color:var(--text); font-size:12px}
+.row-inline{display:flex; align-items:center; gap:6px}
+.dash{color:var(--muted-2)}
+input[type=number],input[type=date],select,input[type=text]{
+  background:var(--panel-2); color:var(--text); border:1px solid var(--line);
+  border-radius:7px; padding:5px 7px; font:inherit; font-size:12px;
+}
+input[type=number]{width:52px}
+input:focus,select:focus{outline:none; border-color:var(--accent)}
+.hint{margin:6px 0 0; font-size:11px; color:var(--muted-2)}
+
+.tally-list{display:flex; flex-wrap:wrap; gap:6px}
+.tally-item{
+  background:var(--panel-2); border:1px solid var(--line); border-radius:999px;
+  padding:3px 10px; font-size:12px;
+}
+.tally-item b{color:var(--straw)}
+
+/* ---------- add bar ---------- */
+.addbar{display:flex; gap:8px; align-items:center; margin-bottom:8px}
+.search-wrap{position:relative; flex:1}
+#citySearch{width:100%; padding:6px 10px}
+.results{
+  position:absolute; z-index:30; top:calc(100% + 4px); left:0; right:0;
+  max-height:240px; overflow-y:auto;
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+  box-shadow:0 10px 26px rgba(0,0,0,.35);
+}
+.result{
+  display:flex; align-items:center; gap:8px; padding:7px 10px; cursor:pointer;
+  border-bottom:1px solid var(--line);
+}
+.result:last-child{border-bottom:none}
+.result:hover,.result.active{background:var(--accent-soft)}
+.result .rn{font-weight:600}
+.result .rs{color:var(--muted); font-size:11px}
+.result .rt{margin-left:auto; color:var(--muted-2); font-size:11px; font-variant-numeric:tabular-nums}
+.result.dim{opacity:.45; cursor:default}
+
+/* ---------- empty ---------- */
+.empty{padding:18px 6px; text-align:center; color:var(--muted)}
+.empty p{margin:0 0 8px}
+.chip{
+  background:var(--panel); border:1px solid var(--line); color:var(--text);
+  border-radius:999px; padding:4px 11px; font-size:12px; cursor:pointer; margin:0 3px;
+}
+.chip:hover{border-color:var(--accent); background:var(--accent-soft)}
+
+/* ---------- controls ---------- */
+.controls{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:8px}
+.ctl{font-size:11px; color:var(--muted); display:flex; flex-direction:row; align-items:center; gap:6px}
+.daynav{display:flex; align-items:center; gap:4px}
+.legend{margin-left:auto; display:flex; align-items:center; gap:5px; font-size:11px; color:var(--muted)}
+.lg{width:11px; height:11px; border-radius:3px; display:inline-block; margin-left:7px}
+.lg-ok{background:var(--ok)} .lg-edge{background:var(--edge)}
+.lg-bad{background:var(--bad)} .lg-night{background:var(--night)}
+
+/* ---------- best slots ---------- */
+.best{display:flex; align-items:center; gap:8px; margin-bottom:8px; min-height:26px}
+.best-label{font-size:11px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); white-space:nowrap}
+.best-chips{display:flex; gap:6px; flex:1; min-width:0}
+.best-chip{
+  background:var(--panel); border:1px solid var(--line); color:var(--text);
+  border-radius:8px; padding:3px 8px; font-size:12px; cursor:pointer;
+  display:flex; align-items:center; gap:6px;
+  flex:1 1 0; min-width:0; white-space:nowrap; overflow:hidden;
+}
+.best-chip:hover{border-color:var(--accent)}
+.best-chip.sel{border-color:var(--accent); background:var(--accent-soft)}
+.best-chip .rank{color:var(--muted-2); font-size:10px}
+.best-chip .verdict{font-size:10px; color:var(--muted); min-width:0; overflow:hidden; text-overflow:ellipsis}
+.best-chip .verdict.good{color:var(--ok-2)}
+
+/* ---------- grid ---------- */
+.gridwrap{border:1px solid var(--line); border-radius:var(--radius); padding:6px; background:var(--panel); overflow:hidden}
+.grid{display:grid; grid-template-columns:150px repeat(24, 1fr); gap:2px; min-width:720px}
+.g-corner{font-size:10px; color:var(--muted-2); display:flex; align-items:flex-end; padding-bottom:3px}
+.g-hour{
+  font-size:9px; color:var(--muted-2); text-align:center; padding-bottom:3px;
+  font-variant-numeric:tabular-nums; cursor:pointer; border-radius:4px;
+}
+.g-hour:hover{color:var(--text)}
+.g-hour.sel{color:var(--accent); font-weight:700}
+.g-name{
+  display:flex; align-items:center; gap:6px; padding:0 4px 0 2px; min-width:0;
+  border-radius:6px;
+}
+.g-name .flag{font-size:13px}
+.g-name .txt{min-width:0; flex:1; line-height:1.15}
+.g-name .cn{font-size:11px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block}
+.g-name .who{font-size:9.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block}
+.g-name .who:hover{color:var(--accent)}
+.g-tools{display:flex; gap:2px; opacity:.35}
+.g-name:hover .g-tools{opacity:1}
+.tool{
+  background:none; border:none; color:var(--muted); cursor:pointer; font-size:10px;
+  padding:1px 3px; border-radius:4px; line-height:1;
+}
+.tool:hover{background:var(--panel-2); color:var(--text)}
+.tool.on{color:var(--accent); font-weight:700}
+.cell{
+  height:22px; border-radius:4px; font-size:10px; display:flex; align-items:center;
+  justify-content:center; cursor:pointer; font-variant-numeric:tabular-nums;
+  color:#0d1018; font-weight:600; position:relative; border:1px solid transparent;
+}
+.cell.b0{background:var(--ok)}
+.cell.b1{background:var(--edge)}
+.cell.b2{background:var(--bad)}
+.cell.b3{background:var(--night); color:#fff}
+.cell.wknd::after{
+  content:''; position:absolute; inset:0; border-radius:3px;
+  background:repeating-linear-gradient(45deg,rgba(0,0,0,.28) 0 3px,transparent 3px 6px);
+}
+.cell.sel{border-color:var(--text); box-shadow:0 0 0 1px var(--text)}
+.cell.dayline{border-left:2px solid var(--muted-2)}
+
+/* ---------- detail ---------- */
+.detail{margin-top:8px}
+.detail-card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:8px 10px}
+.detail-head{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px}
+.detail-head h2{margin:0; font-size:14px; text-transform:none; letter-spacing:0; color:var(--text)}
+.verdict-pill{font-size:11px; padding:2px 9px; border-radius:999px; border:1px solid var(--line); color:var(--muted)}
+.verdict-pill.good{color:var(--ok-2); border-color:var(--ok)}
+.verdict-pill.warn{color:var(--edge); border-color:var(--edge)}
+.verdict-pill.bad{color:var(--night); border-color:var(--night)}
+.detail-actions{margin-left:auto; display:flex; gap:6px}
+.btn{
+  background:var(--accent); color:#fff; border:none; border-radius:8px;
+  padding:5px 11px; font-size:12px; cursor:pointer;
+}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:var(--panel-2); color:var(--text); border:1px solid var(--line)}
+.rows{display:flex; flex-direction:column; gap:2px}
+.drow{
+  display:grid; grid-template-columns:20px 1fr 136px 92px 86px; gap:8px; align-items:center;
+  padding:3px 7px; border-radius:7px; background:var(--panel-2); font-size:11.5px;
+}
+.drow .ddate{color:var(--muted); font-size:11px; text-align:right; white-space:nowrap}
+.drow.straw{background:linear-gradient(90deg,rgba(224,168,60,.20),var(--panel-2)); border:1px solid var(--straw)}
+.drow .dwho{color:var(--muted); font-size:11px}
+.drow .dtime{font-variant-numeric:tabular-nums; font-weight:600; text-align:right; white-space:nowrap}
+.drow .dtag{font-size:10px; color:var(--muted); white-space:nowrap; text-align:right}
+.quickstart{display:flex; align-items:center; gap:6px; margin:-4px 0 10px; font-size:11px; color:var(--muted-2)}
+.drow .dtag.straw-tag{color:var(--straw); font-weight:700}
+.straw-note{margin:6px 0 0; font-size:11.5px; color:var(--muted)}
+.straw-note b{color:var(--straw)}
+.toast{
+  position:absolute; left:50%; transform:translateX(-50%); bottom:14px;
+  background:var(--panel); border:1px solid var(--accent); color:var(--text);
+  padding:7px 14px; border-radius:999px; font-size:12px; z-index:60;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+}
+
+/* ---------- dense mode (.many on the popup root, set by fitToPopup in popup.js) ---------- */
+/* The detail list runs in two columns and drops the tag column; the short-straw row keeps
+   its highlight and the note under the list names who drew it. */
+.many .rows{display:grid; grid-template-columns:1fr 1fr; gap:2px 8px}
+.many .drow{grid-template-columns:18px 1fr 126px 64px; gap:6px; font-size:11px}
+.many .drow .dtag{display:none}

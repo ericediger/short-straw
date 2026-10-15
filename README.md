@@ -10,15 +10,24 @@ honest about who's taking the hit when there isn't a painless one.
 
 Plain HTML/CSS/JS. No build step, no bundler, no network calls, no accounts.
 
-## Install (unpacked)
+## Install
 
-1. Open `chrome://extensions`
-2. Turn on **Developer mode** (top right)
-3. Click **Load unpacked** and choose this folder (or run `./make-dist.sh` and choose
-   `dist/`, which holds only the extension files)
-4. Pin the 🥤 icon to the toolbar
+The `dist` folder is the extension. Everything else in this repo is the source it is
+built from, and Chrome doesn't need any of it.
 
-To pick up code changes later, hit the ↻ reload button on the extension's card.
+1. Download the repo (**Code ▸ Download ZIP** on GitHub, then unzip) or clone it.
+2. Drag the `dist` folder to your Desktop, or anywhere else you'll leave it. Chrome loads
+   the extension from that folder every time, so don't move or delete it afterwards.
+3. Open `chrome://extensions` and turn on **Developer mode** (top right).
+4. Click **Load unpacked** and choose the `dist` folder you just moved.
+5. Pin the 🥤 icon to the toolbar.
+
+## Developing
+
+Edit the files at the repo root, run `./make-dist.sh` to rebuild `dist/`, then hit the ↻
+reload button on the extension's card. `dist/` is committed so that every download ships
+ready to install, so rebuild it before committing a change to the popup. While iterating
+you can also load the repo root itself unpacked and skip the rebuild.
 
 ## Using it
 
@@ -76,7 +85,8 @@ cities.js           ~140 cities with IANA zones
 icons/              generated PNGs
 demo.html/css/js    the live demo: a mock browser window around the real popup, with a fictional team
 media/              the explainer video and its poster frame
-make-dist.sh        copies just the extension files into dist/ (ignored by git)
+dist/               the installable extension: just the nine files Chrome loads (see Install)
+make-dist.sh        rebuilds dist/ from the files above
 ```
 
 ## Local preview without Chrome
